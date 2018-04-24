@@ -1,4 +1,4 @@
-package com.javasampleapproach.dynamodb;
+package com.cmpe282.dynamodb;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
