@@ -1,0 +1,119 @@
+macbookpro:CMPE272 swetha$ #TESTING POST
+===============================
+hortener_api swetha$ curl -v -H "Content-Type: application/json" -H "X-Forwarded-User: swetha" -X POST -d  '{"oURL":"www.kayak.com"}' http://localhost:8080/api/v1/url/shorten
+* Hostname was NOT found in DNS cache
+*   Trying 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 8080 (#0)
+> POST /api/v1/url/shorten HTTP/1.1
+> User-Agent: curl/7.37.1
+> Host: localhost:8080
+> Accept: */*
+> Content-Type: application/json
+> X-Forwarded-User: swetha
+> Content-Length: 24
+> 
+* upload completely sent off: 24 out of 24 bytes
+< HTTP/1.1 202 
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Date: Wed, 06 Dec 2017 03:44:51 GMT
+< 
+* Connection #0 to host localhost left intact
+{"originalURL":"www.kayak.com","status":"","shorternedURL":"1fbbe4b"}macbookpro:cmpe272_url_shortener_api swetha$ 
+==================================
+#TESTING GET
+macbookpro:CMPE272 swetha$ curl -v http://localhost:8080/api/v1/url/017dc1b; echo;
+* Connected to localhost (::1) port 8080 (#0)
+> GET /api/v1/url/017dc1b HTTP/1.1
+> User-Agent: curl/7.37.1
+> Host: localhost:8080
+> Accept: */*
+> 
+< HTTP/1.1 200 
+< Content-Type: text/plain;charset=UTF-8
+< Content-Length: 13
+< Date: Mon, 13 Nov 2017 06:28:45 GMT
+< 
+* Connection #0 to host localhost left intact
+www.kayak.com
+macbookpro:CMPE272 swetha$ 
+macbookpro:CMPE272 swetha$ 
+=======================================
+macbookpro:CMPE272 swetha$ #TESTING DELETE
+macbookpro:CMPE272 swetha$ curl -v DELETE  http://localhost:8080/api/v1/url/017dc1b; echo;
+* Rebuilt URL to: DELETE/
+* Hostname was NOT found in DNS cache
+* Could not resolve host: DELETE
+* Closing connection 0
+curl: (6) Could not resolve host: DELETE
+* Hostname was NOT found in DNS cache
+*   Trying ::1...
+* Connected to localhost (::1) port 8080 (#1)
+> GET /api/v1/url/017dc1b HTTP/1.1
+> User-Agent: curl/7.37.1
+> Host: localhost:8080
+> Accept: */*
+> 
+< HTTP/1.1 200 
+< Content-Type: text/plain;charset=UTF-8
+< Content-Length: 13
+< Date: Mon, 13 Nov 2017 06:29:03 GMT
+< 
+====================
+After inserting kayak post again, we can test for put
+macbookpro:CMPE272 swetha$ ## TESTING PUT BY CHANGING KAYAK.com to myntra.com
+macbookpro:CMPE272 swetha$ curl -v -H "Content-Type: Application/json" -X PUT -d '{"oURL":"http://myntra.com"}' http://localhost:8080/api/v1/url/shorten/017dc1b ;echo;
+* Hostname was NOT found in DNS cache
+*   Trying ::1...
+* Connected to localhost (::1) port 8080 (#0)
+> PUT /api/v1/url/shorten/017dc1b HTTP/1.1
+> User-Agent: curl/7.37.1
+> Host: localhost:8080
+> Accept: */*
+> Content-Type: Application/json
+> Content-Length: 28
+> 
+* upload completely sent off: 28 out of 28 bytes
+< HTTP/1.1 202 
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Date: Mon, 13 Nov 2017 06:34:49 GMT
+< 
+* Connection #0 to host localhost left intact
+{"originalURL":"http://myntra.com","status":"","shorternedURL":"017dc1b"}
+macbookpro:CMPE272 swetha$ 
+macbookpro:CMPE272 swetha$ 
+macbookpro:CMPE272 swetha$ curl -v http://localhost:8080/api/v1/url/017dc1b
+* Hostname was NOT found in DNS cache
+*   Trying ::1...
+* Connected to localhost (::1) port 8080 (#0)
+> GET /api/v1/url/017dc1b HTTP/1.1
+> User-Agent: curl/7.37.1
+> Host: localhost:8080
+> Accept: */*
+> 
+< HTTP/1.1 200 
+< Content-Type: text/plain;charset=UTF-8
+< Content-Length: 17
+< Date: Mon, 13 Nov 2017 06:35:23 GMT
+< 
+* Connection #0 to host localhost left intact
+http://myntra.commacbookpro:CMPE272 swetha$ curl -v http://localhost:8080/api/v1/url/017dc1b;echo
+* Hostname was NOT found in DNS cache
+*   Trying ::1...
+* Connected to localhost (::1) port 8080 (#0)
+> GET /api/v1/url/017dc1b HTTP/1.1
+> User-Agent: curl/7.37.1
+> Host: localhost:8080
+> Accept: */*
+> 
+< HTTP/1.1 200 
+< Content-Type: text/plain;charset=UTF-8
+< Content-Length: 17
+< Date: Mon, 13 Nov 2017 06:35:28 GMT
+< 
+* Connection #0 to host localhost left intact
+http://myntra.com
+macbookpro:CMPE272 swetha$ 
+=======
+
