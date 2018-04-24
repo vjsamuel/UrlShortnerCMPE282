@@ -1,83 +1,111 @@
 package com.javasampleapproach.dynamodb.controller;
 
-import java.util.Arrays;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.javasampleapproach.dynamodb.model.Customer;
-import com.javasampleapproach.dynamodb.repo.CustomerRepository;
+import com.javasampleapproach.dynamodb.model.UrlMap;
+import com.javasampleapproach.dynamodb.repo.UrlRepository;
+import com.javasampleapproach.dynamodb.response.UrlResponse;
 
-
+@CrossOrigin(origins="*")
 @RestController
 public class WebController {
-
+	
+	
 	@Autowired
-	CustomerRepository repository;
-
-	@RequestMapping("/delete")
-	public String delete() {
-		repository.deleteAll();
-		return "Done";
-	}
-
-	@RequestMapping("/save")
-	public String save() {
-		// save a single Customer
-		repository.save(new Customer("JSA-1", "Jack", "Smith", 12));
-
-		// save a list of Customers
-		repository.save(Arrays.asList(new Customer("JSA-2", "Adam", "Johnson",22), new Customer("JSA-3", "Kim", "Smith",54),
-				new Customer("JSA-4", "David", "Williams", 24), new Customer("JSA-5", "Peter", "Davis",44)));
-
-		return "Done";
+	UrlRepository repository;
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/api/v1/url/{shorturl}")
+	public ResponseEntity<String> expandUrl(@PathVariable String shorturl){
+		if(repository.findBysUrl(shorturl).isEmpty()) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		
+		HttpHeaders header = new HttpHeaders();
+		header.add("Location", repository.findBysUrl(shorturl).get(0).getoUrl());
+		return new ResponseEntity<>(header, HttpStatus.PERMANENT_REDIRECT);
 	}
 	
-    @RequestMapping(method = RequestMethod.POST, value = "/saveCustomer") 
-    public ResponseEntity<String> save(@RequestBody Customer input){
-    	
-    	try {
-    		repository.save(input);
-    		return new ResponseEntity("done", HttpStatus.ACCEPTED);
-    	} catch(Exception e) {
-    		return new ResponseEntity(null, HttpStatus.EXPECTATION_FAILED);
+	@RequestMapping(method = RequestMethod.GET, value = "/api/v1/urls")
+	public ResponseEntity<List<UrlResponse>> getShortUrls(String user){
+		if(user.equals("") || user == null) {
+			return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
+		}
+		List<UrlMap> userList = repository.findByuserName(user);
+		if(userList.isEmpty() == true) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		List<UrlResponse> responseList = new ArrayList<>();
+		for(UrlMap listElement : userList ) {
+			UrlResponse response = new UrlResponse(listElement.getoUrl(), listElement.getsUrl(), "");
+			responseList.add(response);
+		}
+		return new ResponseEntity<>(responseList, HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/api/v1/url/shorten")
+	public ResponseEntity<UrlResponse> shortenUrl(String user, @RequestBody UrlMap input){
+		try {
+		if (user.equals(null) || user.isEmpty() == true) {
+    		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
     	}
-    }
-
-
-	@RequestMapping("/findall")
-	public String findAll() {
-		String result = "";
-		Iterable<Customer> customers = repository.findAll();
-
-		for (Customer cust : customers) {
-			result += cust.toString() + "<br>";
+		String oUrl = input.getoUrl();
+		
+		if(oUrl.equals("") || oUrl == null) {
+			return new ResponseEntity<> (null,HttpStatus.EXPECTATION_FAILED);
 		}
-
-		return result;
-	}
-
-	@RequestMapping("/findbyid")
-	public String findById(@RequestParam("id") String id) {
-		String result = "";
-		result = repository.findOne(id).toString();
-		return result;
-	}
-
-	@RequestMapping("/findbylastname")
-	public String fetchDataByLastName(@RequestParam("lastname") String lastName) {
-		String result = "";
-
-		for (Customer cust : repository.findByLastName(lastName)) {
-			result += cust.toString() + "<br>";
+		
+		if(!repository.findByoUrl(oUrl).isEmpty()) {
+			return new ResponseEntity<UrlResponse> (new UrlResponse(repository.findByoUrl(oUrl).get(0).getsUrl(), oUrl, ""), HttpStatus.ACCEPTED);
 		}
+		
+		String sUrl = getHash(oUrl);
+		//(oUrl);
 
-		return result;
+		if (!repository.findBysUrl(sUrl).isEmpty()) {
+			long salt = System.currentTimeMillis();
+			sUrl = getHash(oUrl + salt);
+		}
+	
+		UrlMap urlMap = new UrlMap(oUrl, sUrl, user);
+		repository.save(urlMap);
+		return new ResponseEntity<>(new UrlResponse(sUrl, oUrl, ""), HttpStatus.ACCEPTED);
+	} catch (Exception e) {
+		return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
 	}
+  }
+	
+	 public static String getHash(String longurl) {
+	        // Moving to SHA-512 as it is the secure Hash algorithm:
+		        try {
+		            MessageDigest md = MessageDigest.getInstance("SHA-512");
+		            byte[] sourceurl = md.digest(longurl.getBytes());
+		            BigInteger number = new BigInteger(1, sourceurl);
+		            String hashtext = number.toString(16);
+		            // Now we need to zero pad it if you actually want the full 32 chars.
+		            while (hashtext.length() < 32) {
+		                hashtext = "0" + hashtext;
+		            }
+		            return hashtext.substring(0, 7);
+		        }
+		        catch (NoSuchAlgorithmException e) {
+		            throw new RuntimeException(e);
+		        }
+		    }
+	
 }

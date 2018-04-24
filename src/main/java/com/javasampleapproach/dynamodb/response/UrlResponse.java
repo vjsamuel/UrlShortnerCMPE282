@@ -1,12 +1,12 @@
 package com.javasampleapproach.dynamodb.response;
 
-public class Response {
+public class UrlResponse {
 
 	private final String shortenedURL;
 	private final String originalURL;
 	private final String Status;
 	
-	public Response(String shortenedURL, String originalURL,  String Status) {
+	public UrlResponse(String shortenedURL, String originalURL,  String Status) {
 		this.shortenedURL = shortenedURL;
 		this.originalURL = originalURL;
 		this.Status = Status;
