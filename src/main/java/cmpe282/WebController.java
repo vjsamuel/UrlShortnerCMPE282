@@ -120,6 +120,9 @@ public class WebController {
 		}
 		try {
 		String oURL = input.getoURL();
+		if (!oURL.startsWith("https") && !oURL.startsWith("http")) {
+			oURL = "http://" + oURL;
+		}
 		UUID uuid = UUID.randomUUID();
 		String id = uuid.toString();
 		String sURL = getHash(oURL);
