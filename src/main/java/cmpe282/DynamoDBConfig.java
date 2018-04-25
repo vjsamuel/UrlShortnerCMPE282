@@ -1,4 +1,4 @@
-package com.javasampleapproach.dynamodb.config;
+package cmpe282;
 
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.springframework.beans.factory.annotation.Value;
