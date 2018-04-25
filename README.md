@@ -1,6 +1,6 @@
--------------
+---------------
 Dependencies:
--------------
+---------------
 1. Download Amazon DynamoDB local client from the link below
 Link: <b> <u> https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html#DynamoDBLocal.DownloadingAndRunning </u></b><br>
 2. cd /Users/swetha/Downloads/dynamodb_local_latest <br>
@@ -46,15 +46,15 @@ swetha-macbook-pro$<b> aws dynamodb create-table --table-name UrlMap --attribute
     } <br>
 } <br>
 
-------------------
+------------------------------------
 Running the spring boot application
------------------- <br>
+------------------------------------
+
 To compile , issue following commands in the current directory <br>
--1. mvn compile <br>
--2. mvn package <br>
--3. mvn install <br>
+1. mvn compile
+2. mvn package
+3. mvn install
 
 This should create a jar file in target directory.
 <b>java -jar target/cmpe282-0.0.1-SNAPSHOT.jar</b> <br>
-
-Please verify that various endpoints are registered, displayed and spring application runs 
+Application should start. Please refer to <b><a href="SampleOutput.txt">SampleOutput.txt</a></b> file for example curl POST, GET, PUT & DELETE requests
