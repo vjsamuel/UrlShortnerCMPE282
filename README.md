@@ -1,9 +1,10 @@
---------
+-------------
 Dependencies:
---------
+-------------
 1. Download Amazon DynamoDB local client from the link below
 Link: <b> <u> https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html#DynamoDBLocal.DownloadingAndRunning </u></b><br>
-2. Run Dynamo DB local client using the command below 
+2. cd /Users/swetha/Downloads/dynamodb_local_latest
+Run Dynamo DB local client using the command below 
 command$<b> java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb </b> <br>
 Initializing DynamoDB Local with the following configuration: <br>
 Port: 8000 <br>
