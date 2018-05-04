@@ -1,3 +1,9 @@
+============================
+TESTING GET ALL
+============================
+macbookpro:UrlShortnerCMPE282 swetha$ curl   http://localhost:8080/api/v1/urls -H "X-Forwarded-User: swetha"
+[{"id":"4ea5122e-0562-4702-9196-4f2d1cc17dd1","oURL":"http://www.kayak.com","sURL":"71b0449","user":"swetha"},{"id":"ba60e2e0-1323-4b55-ad7b-cc6ee8578619","oURL":"http://myntra.com","sURL":"d115d54","user":"swetha"},{"id":"59189b64-5f24-4005-82c3-6e9c9acd65b5","oURL":"http://www.bing.com","sURL":"357b8c2","user":"swetha"}]macbookpro:UrlShortnerCMPE282 swetha$ 
+
 =====================================
 macbookpro:CMPE282 swetha$ #TESTING POST
 ===============================

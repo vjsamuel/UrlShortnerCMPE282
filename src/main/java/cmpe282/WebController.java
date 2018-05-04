@@ -3,6 +3,8 @@ package cmpe282;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -139,7 +141,22 @@ public class WebController {
 		}
 	}
 	
-	@RequestMapping("/findall")
+	@RequestMapping("/api/v1/urls")
+	public ResponseEntity<List<UrlMap>> getUrls(@RequestHeader(value="X-Forwarded-User") String user) {
+    	if (user.equals(null) || user.isEmpty() == true) {
+    		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+    	}
+    	
+    	List<UrlMap> response = repository.findByuser(user);
+    	if (response.isEmpty() == true || response.size() == 0) {
+    		System.out.println("User is not FOUND");
+		return new ResponseEntity<>(Collections.EMPTY_LIST, HttpStatus.NOT_FOUND);
+	}
+    		
+	return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+	
+	@RequestMapping("/api/v1/getall")
 	public String findAll() {
 		String result = "";
 		Iterable<UrlMap> urls = repository.findAll();
