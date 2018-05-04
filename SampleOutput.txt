@@ -50,8 +50,10 @@ macbookpro:UrlShortnerCMPE282 swetha$ curl -v http://localhost:8080/api/v1/url/7
 * Connection #0 to host localhost left intact
 =====================================
 macbookpro:CMPE282 swetha$ #TESTING POST
+=======
+#TESTING POST
 ===============================
-hortener_api swetha$ curl -v -H "Content-Type: application/json" -H "X-Forwarded-User: swetha" -X POST -d  '{"oURL":"www.kayak.com"}' http://localhost:8080/api/v1/url/shorten
+macbookpro:CMPE272 swetha$ curl -v -H "Content-Type: application/json" -H "X-Forwarded-User: swetha" -X POST -d  '{"oURL":"www.kayak.com"}' http://localhost:8080/api/v1/url/shorten
 * Hostname was NOT found in DNS cache
 *   Trying 127.0.0.1...
 * Connected to localhost (127.0.0.1) port 8080 (#0)
