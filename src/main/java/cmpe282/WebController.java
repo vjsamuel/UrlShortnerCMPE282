@@ -3,7 +3,6 @@ package cmpe282;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -28,6 +26,9 @@ public class WebController {
 
 	@Autowired
 	UrlMapRepository repository;
+	
+	@Autowired
+	JwksConfig jwksconfig;
 
 	@RequestMapping("/deleteall")
 	public String delete() {
@@ -36,8 +37,13 @@ public class WebController {
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE, value="/api/v1/url/{shortURL}")
-    public ResponseEntity<UrlMap> deleteURL(@RequestHeader(value="X-Forwarded-User") String user, @PathVariable String shortURL) {
-    	if (user.equals(null) || user.isEmpty() == true) {
+    public ResponseEntity<UrlMap> deleteURL(@RequestHeader(value="Authorization") String auth, @PathVariable String shortURL) {
+		if (auth.equals(null) || auth.isEmpty() == true) {
+    		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+    	}
+    	
+    	String user = JwksClient.getInstance(jwksconfig.getUrls()).getID(auth);
+    	if (user == null || user.isEmpty()) {
     		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
     	}
     	
@@ -72,8 +78,13 @@ public class WebController {
 	
 	
 	 @RequestMapping(method = RequestMethod.PUT, value="/api/v1/url/shorten/{shortURL}") 
-	    public ResponseEntity<UrlMap> putURL (@RequestHeader(value="X-Forwarded-User") String user, @RequestBody UrlMap input, @PathVariable String shortURL){
-	    	if (user.equals(null) || user.isEmpty() == true) {
+	    public ResponseEntity<UrlMap> putURL (@RequestHeader(value="Authorization") String auth, @RequestBody UrlMap input, @PathVariable String shortURL){
+	    	if (auth.equals(null) || auth.isEmpty() == true) {
+	    		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+	    	}
+	    	
+	    	String user = JwksClient.getInstance(jwksconfig.getUrls()).getID(auth);
+	    	if (user == null || user.isEmpty()) {
 	    		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
 	    	}
 	    	try {
@@ -117,10 +128,20 @@ public class WebController {
 	    }
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/api/v1/url/shorten")
-	public ResponseEntity<UrlMap> shortenURL(@RequestHeader(value="X-Forwarded-User") String user, @RequestBody UrlMap input) {
+	public ResponseEntity<UrlMap> shortenURL(@RequestHeader(value="Authorization") String auth, @RequestBody UrlMap input) {
 		if (input.getoURL() == null || input.getoURL().equals("")) {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+		
+		if (auth.equals(null) || auth.isEmpty() == true) {
+    		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+    	}
+    	
+    	String user = JwksClient.getInstance(jwksconfig.getUrls()).getID(auth);
+    	if (user == null || user.isEmpty()) {
+    		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+    	}
+		
 		try {
 		String oURL = input.getoURL();
 		if (!oURL.startsWith("https") && !oURL.startsWith("http")) {
@@ -143,8 +164,13 @@ public class WebController {
 	}
 	
 	@RequestMapping("/api/v1/urls")
-	public ResponseEntity<List<UrlMap>> getUrls(@RequestHeader(value="X-Forwarded-User") String user) {
-    	if (user.equals(null) || user.isEmpty() == true) {
+	public ResponseEntity<List<UrlMap>> getUrls(@RequestHeader(value="Authorization") String auth) {
+		if (auth.equals(null) || auth.isEmpty() == true) {
+    		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+    	}
+    	
+    	String user = JwksClient.getInstance(jwksconfig.getUrls()).getID(auth);
+    	if (user == null || user.isEmpty()) {
     		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
     	}
     	
@@ -157,31 +183,6 @@ public class WebController {
 	return new ResponseEntity<>(response, HttpStatus.OK);
     }
 	
-	@RequestMapping("/api/v1/getall")
-	public String findAll() {
-		String result = "";
-		Iterable<UrlMap> urls = repository.findAll();
-
-		for (UrlMap url : urls) {
-			result += url.toString() + "<br>";
-		}
-
-		return result;
-	}
-
-	@RequestMapping("/findbyid")
-	public String findById(@RequestParam("id") String id) {
-		String result = "";
-		result = repository.findOne(id).toString();
-		return result;
-	}
-
-	@RequestMapping("/save") 
-	public String save() {
-		UrlMap urlMap = new UrlMap(System.currentTimeMillis()+ "", "http://www.google.com", "http://g.com", "Swetha" );
-		repository.save(urlMap);
-		return urlMap.toString();
-	}
 	
 	public static String getHash(String longurl) {
          // Moving to SHA-512 as it is the secure Hash algorithm:
