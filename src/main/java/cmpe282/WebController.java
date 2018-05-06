@@ -55,7 +55,7 @@ public class WebController {
 				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 			}
 			String id = repository.findBysURL(map.getsURL()).get(0).getId();
-			repository.delete(id);
+			repository.deleteById(id);
 			return new ResponseEntity<>(null, HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -104,7 +104,7 @@ public class WebController {
 	    				if (urlmap_object.getsURL().equals(sURL)) {
 	    					// User is the same as the user trying to update
 	    					if (urlmap_object.getUser().equals(user)) {
-	    						repository.delete(urlmap_object.getId());
+	    						repository.deleteById(urlmap_object.getId());
 	    						
 	    						UUID uid = UUID.randomUUID();
 	    						String id = uid.toString();

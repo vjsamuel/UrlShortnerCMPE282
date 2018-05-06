@@ -21,6 +21,7 @@ public class UrlMap {
 		this.user = user;
 	}
 
+	
 	@DynamoDBHashKey(attributeName = "id")
 	public String getId() {
 		return id;
